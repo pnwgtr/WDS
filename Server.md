@@ -3,6 +3,8 @@
 
 ---
 
+<hr>
+<hr>
 <h1 id="poweredge-r420-–-from-bare-metal-to-usaf-sdc-imaging-server-windows-server-2022"><strong>PowerEdge R420 – From Bare Metal to USAF SDC Imaging Server (Windows Server 2022)</strong></h1>
 <hr>
 <h2 id="table-of-contents"><strong>Table of Contents</strong></h2>
@@ -210,20 +212,21 @@ Even though this model supports RAID, your training lab can install directly to 
 </ol>
 <p><em>Technician Tip:<br>
 If using AHCI mode instead of RAID, you may not need Dell’s PERC driver—Windows 2022 usually detects it automatically.</em></p>
-<pre class=" language-5"><code class="prism .3 language-5">If you see **“Windows cannot install to this disk”** or similar:
-
-1. Open a command prompt by pressing **Shift + F10**.  
-2. Type:
-   ```powershell
-   diskpart
-   list disk
-   select disk 0
-   clean
-   exit
-This removes any old partitions.
-3. Click Refresh in the installer and try again.
-4. Select the cleaned drive → Next.
+<pre class="  language-5"><code class="prism .3  language-5">If you see **“Windows cannot install to this disk”** or similar:
+</code></pre><ol>
+<li>Open a command prompt by pressing <strong>Shift + F10</strong>.</li>
+<li>Type:<pre class=" language-powershell"><code class="prism  language-powershell">diskpart
+list disk
+<span class="token function">select</span> disk 0
+clean
+<span class="token keyword">exit</span>
 </code></pre>
+</li>
+</ol>
+<p>This removes any old partitions.<br>
+3. Click Refresh in the installer and try again.<br>
+4. Select the cleaned drive → Next.<br>
+</p>
 <p><em>Technician Tip:<br>
 Use the “clean” command only when you are sure nothing important is on the disk—it erases all partitions instantly.</em></p>
 <p><strong>5.4 Installation Time</strong><br>
@@ -245,7 +248,6 @@ Always reboot after renaming.  If you skip this, DHCP and WDS roles later will r
 <h3 id="installation-verification-checklist">5.6 Installation Verification Checklist</h3>
 <p>Use this checklist immediately after Windows Server 2022 finishes installing.<br>
 It ensures the OS, disk, and NICs are healthy before continuing to configuration.</p>
-
 <table>
 <thead>
 <tr>
@@ -411,7 +413,7 @@ If you do, Windows may send Internet traffic out through the wrong adapter, brea
 <hr>
 <h3 id="verify-network-configuration">6.4  Verify Network Configuration</h3>
 <p>Open PowerShell and run:</p>
-<pre class=" language-powershell"><code class="prism  language-powershell">Get<span class="token operator">-</span>NetIPAddress
+<pre class="  language-powershell"><code class="prism  language-powershell">Get<span class="token operator">-</span>NetIPAddress
 Expected output:
 <span class="token function">Copy</span> code
 IPAddress         InterfaceAlias
@@ -425,12 +427,10 @@ You can also rename and assign IPs entirely through PowerShell:</p>
 <pre><code>powershell
 Rename-NetAdapter -Name "Ethernet0" -NewName "Internet"
 Rename-NetAdapter -Name "Ethernet1" -NewName "Imaging"
-
-New-NetIPAddress -InterfaceAlias "Internet" -IPAddress 192.168.1.50 -PrefixLength 24 -DefaultGateway 192.168.1.1
-Set-DnsClientServerAddress -InterfaceAlias "Internet" -ServerAddresses 8.8.8.8
-
-New-NetIPAddress -InterfaceAlias "Imaging" -IPAddress 192.168.50.1 -PrefixLength 24
-</code></pre>
+</code></pre><p>New-NetIPAddress -InterfaceAlias “Internet” -IPAddress 192.168.1.50 -PrefixLength 24 -DefaultGateway 192.168.1.1<br>
+Set-DnsClientServerAddress -InterfaceAlias “Internet” -ServerAddresses 8.8.8.8</p>
+<p>New-NetIPAddress -InterfaceAlias “Imaging” -IPAddress 192.168.50.1 -PrefixLength 24<br>
+</p>
 <p><em>Technician Tip:<br>
 If you reimage or replace the network card, these names may revert.<br>
 Always confirm NIC names after reinstalling Windows or updating drivers.</em></p>
@@ -487,7 +487,7 @@ Step	Action	Expected Result	Pass (✓)<br>
 </li>
 </ol>
 <p><strong>Verify:</strong></p>
-<pre class=" language-powershell"><code class="prism  language-powershell">Powershell 
+<pre class="  language-powershell"><code class="prism  language-powershell">Powershell 
 Get<span class="token operator">-</span>DhcpServerv4Scope` 
 </code></pre>
 <p><strong>Expected output:</strong></p>
@@ -536,7 +536,7 @@ Select or create <code>D:\RemoteInstall</code> (if no D: drive, use C:).</li>
 </li>
 <li>Finish → Close → Yes to start the WDS service.</li>
 </ol>
-<pre class=" language-verify"><code class="prism : language-verify">powershell
+<pre class="  language-verify"><code class="prism :  language-verify">powershell
 Get-Service wdsserver
 You should see Status : Running
 </code></pre>
@@ -579,7 +579,7 @@ Run these commands to confirm configuration:</p>
 <p><strong>Both boot.wim and install.wim should appear in the list.</strong></p>
 <p><strong>8.7 Optional</strong> – Convert install.esd to install.wim<br>
 Only if your ISO contains install.esd instead of install.wim:</p>
-<pre class=" language-undefined"><code class="prism language-***powershell*** language-undefined">mkdir C:\Sources
+<pre class="  language-undefined"><code class="prism language-***powershell***  language-undefined">mkdir C:\Sources
 copy E:\Sources\install.esd C:\Sources\
 Dism /Export-Image /SourceImageFile:"C:\Sources\install.esd" /SourceIndex:1 `
      /DestinationImageFile:"C:\Sources\install.wim" /Compress:max /CheckIntegrity
@@ -587,10 +587,10 @@ Dism /Export-Image /SourceImageFile:"C:\Sources\install.esd" /SourceIndex:1 `
 <p>Then import C:\Sources\install.wim as your install image.</p>
 <p>Technician Tip:<br>
 Conversion can take 5–10 minutes. Don’t close the window until you see “Export completed successfully.”</p>
-<p>8.8 Restart and Final Check<br>
-Reboot the server once to ensure WDS binds cleanly to the Imaging NIC.</p>
+<p><strong>**8.8 Restart and Final Check**</strong></p><p><strong>
+Reboot the server once to ensure WDS binds cleanly to the Imaging NIC.</strong></p>
 <p>After reboot, run:</p>
-<pre class=" language-undefined"><code class="prism language-***powershell*** language-undefined">Powershell Get-Service wdsserver
+<pre class="  language-undefined"><code class="prism language-***powershell***  language-undefined">Powershell Get-Service wdsserver
 </code></pre>
 <p>It should be Running (Automatic).</p>
 <p>Verify the PXE settings:</p>
@@ -610,7 +610,6 @@ Every step must succeed before a workstation can deploy an image.</p>
 <li>The server is bound to the correct NIC</li>
 </ul>
 <h3 id="checklist"><strong>Checklist</strong></h3>
-
 <table>
 <thead>
 <tr>
@@ -684,7 +683,6 @@ Every step must succeed before a workstation can deploy an image.</p>
 </tbody>
 </table><hr>
 <h3 id="troubleshooting-if-a-step-fails"><strong>Troubleshooting if a Step Fails</strong></h3>
-
 <table>
 <thead>
 <tr>
@@ -813,12 +811,11 @@ For example, you can later add USAF_SDC_Win11 alongside USAF_SDC_Win10.</p>
 <hr>
 <h3 id="verify-image-metadata">9.4 Verify Image Metadata</h3>
 <p>From PowerShell, confirm WDS recognizes your images:</p>
-<pre class=" language-powershell"><code class="prism  language-powershell"><span class="token comment"># List all boot images</span>
+<pre class="  language-powershell"><code class="prism  language-powershell"><span class="token comment"># List all boot images</span>
 wdsutil <span class="token operator">/</span>get<span class="token operator">-</span>allimages <span class="token operator">/</span>imageType:Boot
-
-<span class="token comment"># List all install images</span>
-wdsutil <span class="token operator">/</span>get<span class="token operator">-</span>allimages <span class="token operator">/</span>imageType:Install
-</code></pre>
+</code></pre><p><span class="token comment"># List all install images</span><br>
+wdsutil <span class="token operator">/</span>get<span class="token operator">-</span>allimages <span class="token operator">/</span>imageType:Install<br>
+</p>
 <p>Expected output includes:<br>
 Image Name : Windows PE x64 (USAF SDC Boot)<br>
 Image Name : Windows 10 Enterprise (USAF SDC)</p>
@@ -841,13 +838,12 @@ Always cancel here to avoid accidentally overwriting a training workstation.</em
 <h3 id="optional-convert-install.esd-to-install.wim">9.6 (Optional) Convert install.esd to install.wim</h3>
 <p>If your ISO contains install.esd instead of install.wim, convert it using the Deployment Image Servicing and Management (DISM) tool.</p>
 <p>Copy the ESD file to a local folder:</p>
-<pre class=" language-powershell"><code class="prism  language-powershell">powershell 
+<pre class="  language-powershell"><code class="prism  language-powershell">powershell 
 mkdir C:\Sources 
 <span class="token function">copy</span> E:\Sources\install<span class="token punctuation">.</span>esd C:\Sources\
-
-Dism <span class="token operator">/</span>Export<span class="token operator">-</span>Image <span class="token operator">/</span>SourceImageFile:<span class="token string">"C:\Sources\install.esd"</span> <span class="token operator">/</span>SourceIndex:1 `
-     <span class="token operator">/</span>DestinationImageFile:<span class="token string">"C:\Sources\install.wim"</span> <span class="token operator">/</span>Compress:max <span class="token operator">/</span>CheckIntegrity
-</code></pre>
+</code></pre><p>Dism <span class="token operator">/</span>Export<span class="token operator">-</span>Image <span class="token operator">/</span>SourceImageFile:<span class="token string">“C:\Sources\install.esd”</span> <span class="token operator">/</span>SourceIndex:1 `<br>
+<span class="token operator">/</span>DestinationImageFile:<span class="token string">“C:\Sources\install.wim”</span> <span class="token operator">/</span>Compress:max <span class="token operator">/</span>CheckIntegrity<br>
+</p>
 <p>Import the new C:\Sources\install.wim file following steps in 9.3 Add the Install Image.</p>
 <p><em><em>Technician Tip:</em><br>
 This conversion only needs to be done once. Store the resulting install.wim with your other master images.</em></p>
@@ -894,7 +890,6 @@ No errors in Event Viewer → Deployment-Services-Diagnostics	No red errors</p>
 <hr>
 <h2 id="common-issues--troubleshooting"><strong>11. Common Issues &amp; Troubleshooting</strong></h2>
 <h2 id="common-issues--troubleshooting-1">11. Common Issues &amp; Troubleshooting</h2>
-
 <table>
 <thead>
 <tr>
@@ -934,7 +929,6 @@ No errors in Event Viewer → Deployment-Services-Diagnostics	No red errors</p>
 <h2 id="appendix-reference-tables--commands"><strong>12. Appendix: Reference Tables &amp; Commands</strong></h2>
 <h3 id="ip-address-plan"><strong>IP Address Plan</strong></h3>
 <h3 id="ip-address-plan-1">IP Address Plan</h3>
-
 <table>
 <thead>
 <tr>
@@ -963,7 +957,6 @@ No errors in Event Viewer → Deployment-Services-Diagnostics	No red errors</p>
 </tbody>
 </table><h3 id="dhcp-scope"><strong>DHCP Scope</strong></h3>
 <h3 id="dhcp-scope-configuration">DHCP Scope Configuration</h3>
-
 <table>
 <thead>
 <tr>
